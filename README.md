@@ -1,13 +1,13 @@
-WpAlgolia
+wp-plugin-tb-algolia
 -----------------------------
 
 ## Installation
 
-1. Extract the archive in a folder named `algolia` in the `wp-content/plugins` directory of your WordPress instance
+1. Add this plugin to a folder named `wp-plugin-tb-algolia` in the `wp-content/plugins` directory of your WordPress instance
 2. Enable the plugin from your admin Plugins page
 3. Add 2 constants to your wp-config.php file: `ALGOLIA_APPLICATION_ID` & `ALGOLIA_ADMIN_API_KEY`
 4. Add 1 constant to determine the environment prefix for your indices: `ALGOLIA_PREFIX`
- 
+
 ## What is already provided
 
 We provided you with some code for the `Posts` to get you started with building an indexing pipeline.
@@ -40,7 +40,7 @@ $ wp algolia reIndex articles
 Where `articles` is the name of your index. When you'll have more indices, you can change that with another index name.
 
 After the re-index process finished, you should have everything pushed to Algolia, and the settings should be set.
- 
+
 ## Adding more indices
 
 To be able to add your other content types, you need to inspire from what's existing:
@@ -58,9 +58,3 @@ In case you altered just the settings an don't want to operate a full re-index, 
 ```bash
 $ wp algolia pushSettings my_custom_index_name
 ```
-
-
-
-
-
-

@@ -33,6 +33,11 @@ add_action(
 		require_once 'inc/BuddypressGroupsIndex.php';
 
 		// TelaBotanica dependencies.
+		// evenements
+		require_once 'inc/TelaBotanica/EvenementRecordsProvider.php';
+		require_once 'inc/TelaBotanica/EvenementsIndexSettingsFactory.php';
+		require_once 'inc/TelaBotanica/EvenementChangeListener.php';
+		// projets
 		require_once 'inc/TelaBotanica/ProjetRecordsProvider.php';
 		require_once 'inc/TelaBotanica/ProjetsIndexSettingsFactory.php';
 		require_once 'inc/TelaBotanica/ProjetChangeListener.php';
@@ -47,7 +52,14 @@ add_action(
 		// new \WpAlgolia\TelaBotanica\PostChangeListener($index);
 		// $indexRepository->add('posts', $index);
 
-		// Register "projets" index
+		// Register "evenements" index.
+		$settings = new \WpAlgolia\TelaBotanica\EvenementsIndexSettingsFactory();
+		$recordsProvider = new \WpAlgolia\TelaBotanica\EvenementRecordsProvider();
+		$index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'evenements', $algoliaClient, $settings->create(), $recordsProvider);
+		new \WpAlgolia\TelaBotanica\EvenementChangeListener($index);
+		$indexRepository->add('evenements', $index);
+
+		// Register "projets" index.
 		$settings = new \WpAlgolia\TelaBotanica\ProjetsIndexSettingsFactory();
 		$recordsProvider = new \WpAlgolia\TelaBotanica\ProjetRecordsProvider();
 		$index = new \WpAlgolia\BuddypressGroupsIndex(ALGOLIA_PREFIX . 'projets', $algoliaClient, $settings->create(), $recordsProvider);
