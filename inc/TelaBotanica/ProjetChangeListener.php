@@ -37,7 +37,7 @@ class ProjetChangeListener
 
 		// index only public groups
 		$visibility = bp_get_group_status($group);
-		if ( 'public' !== $visibility ) $should_index = false;
+		if ( !in_array( $visibility, ['public', 'private']) ) $should_index = false;
 
 		// compatibility with bp-moderate-group-creation plugin
 		$published_state = groups_get_groupmeta($group->id, 'published');

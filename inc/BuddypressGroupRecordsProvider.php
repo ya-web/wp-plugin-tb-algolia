@@ -102,7 +102,7 @@ abstract class BuddypressGroupRecordsProvider implements RecordsProvider
 
 			// index only public groups
 			$visibility = bp_get_group_status($group);
-			if ( 'public' !== $visibility ) continue;
+			if ( !in_array( $visibility, ['public', 'private']) ) continue;
 
 			// compatibility with bp-moderate-group-creation plugin
 			$published_state = groups_get_groupmeta($group->id, 'published');
