@@ -18,48 +18,45 @@ class ProjetChangeListener
 	 */
 	private $index;
 
-	private $postType = 'bp_groups';
-
 	/**
 	 * @param ProjetsIndex $index
 	 */
 	public function __construct(BuddypressGroupsIndex $index)
 	{
 		$this->index = $index;
-		// TODO
-		// add_action('save_post', array($this, 'pushRecords'), 10, 2);
-		// add_action('before_delete_post', array($this, 'deleteRecords'));
-		// add_action('wp_trash_post', array($this, 'deleteRecords'));
+		add_action('groups_group_after_save', array($this, 'pushRecords'));
+		add_action('bp_groups_delete_group', array($this, 'deleteRecords'));
 	}
 
 	/**
-	 * @param int              $groupId
 	 * @param \BP_Groups_Group $group
 	 */
-	public function pushRecords($groupId, $group)
+	public function pushRecords(\BP_Groups_Group $group)
 	{
-		// TODO
-		// if ($this->postType !== $post->post_type) {
-		//		 return;
-		// }
+		$should_index = true;
 
-		// TODO
-		// if ($post->post_status !== 'publish' || !empty($post->post_password)) {
-		//		 return $this->deleteRecords($postId);
-		// }
+		// index only public groups
+		$visibility = bp_get_group_status($group);
+		if ( 'public' !== $visibility ) $should_index = false;
 
-		$this->index->pushRecordsForGroup($group);
+		// compatibility with bp-moderate-group-creation plugin
+		$published_state = groups_get_groupmeta($group->id, 'published');
+		if ( '0' === $published_state ) $should_index = false;
+
+		if ($should_index) {
+			$this->index->pushRecordsForGroup($group);
+		} else {
+			$this->deleteRecords($group);
+		}
 	}
 
 	/**
-	 * @param int $groupId
+	 * @param \BP_Groups_Group $group
 	 */
-	public function deleteRecords($groupId)
+	public function deleteRecords(\BP_Groups_Group $group)
 	{
-		// TODO
-		// $post = get_post($groupId);
-		// if ($group instanceof \BP_Groups_Group && $post->post_type === $this->postType) {
-		//		 $this->index->deleteRecordsForPost($post);
-		// }
+		if ($group instanceof \BP_Groups_Group) {
+			$this->index->deleteRecordsForGroup($group);
+		}
 	}
 }

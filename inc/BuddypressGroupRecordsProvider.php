@@ -99,6 +99,15 @@ abstract class BuddypressGroupRecordsProvider implements RecordsProvider
 			if (!$group instanceof \BP_Groups_Group) {
 				continue;
 			}
+
+			// index only public groups
+			$visibility = bp_get_group_status($group);
+			if ( 'public' !== $visibility ) continue;
+
+			// compatibility with bp-moderate-group-creation plugin
+			$published_state = groups_get_groupmeta($group->id, 'published');
+			if ( '0' === $published_state ) continue;
+
 			$records = array_merge($records, $this->getRecordsForGroup($group));
 		}
 

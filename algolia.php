@@ -51,8 +51,7 @@ add_action(
 		$settings = new \WpAlgolia\TelaBotanica\ProjetsIndexSettingsFactory();
 		$recordsProvider = new \WpAlgolia\TelaBotanica\ProjetRecordsProvider();
 		$index = new \WpAlgolia\BuddypressGroupsIndex(ALGOLIA_PREFIX . 'projets', $algoliaClient, $settings->create(), $recordsProvider);
-		// TODO
-		// new \WpAlgolia\TelaBotanica\ProjetChangeListener($index);
+		new \WpAlgolia\TelaBotanica\ProjetChangeListener($index);
 		$indexRepository->add('projets', $index);
 
 		// WP CLI commands.

@@ -25,8 +25,7 @@ class ProjetRecordsProvider extends BuddypressGroupRecordsProvider
 		$record['name'] = $group->name;
 		$record['creator_id'] = $group->creator_id;
 		$record['description'] = $group->description;
-		$last_activity = strtotime($group->last_activity); // @WARNING fuseau horaire de PHP
-		$record['last_activity'] = $last_activity;
+		$record['last_activity'] = strtotime($group->last_activity); // @WARNING fuseau horaire de PHP
 		$record['permalink'] = bp_get_group_permalink( $group );
 		$record['image'] = bp_core_fetch_avatar( [
 			'item_id' => $group->id,
@@ -53,6 +52,7 @@ class ProjetRecordsProvider extends BuddypressGroupRecordsProvider
 			$members_ids[] = $group->creator_id;
 		}
 		$record['members_ids'] = $members_ids;
+		$record['visibility'] = bp_get_group_status( $group );
 
 		$record = (array) apply_filters( 'algolia_group_record', $record, $group );
 

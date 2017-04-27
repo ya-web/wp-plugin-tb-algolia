@@ -90,7 +90,7 @@ class BuddypressGroupsIndex extends Index
 		$totalRecordsCount = count($records);
 
 		if (empty($totalRecordsCount)) {
-				return 0;
+			return 0;
 		}
 
 		$this->getAlgoliaIndex()->addObjects($records);
