@@ -33,6 +33,7 @@ add_action(
 		require_once 'inc/BuddypressGroupsIndex.php';
 
 		// TelaBotanica dependencies.
+		require_once 'inc/TelaBotanica/Utils.php';
 		// evenements
 		require_once 'inc/TelaBotanica/EvenementRecordsProvider.php';
 		require_once 'inc/TelaBotanica/EvenementsIndexSettingsFactory.php';

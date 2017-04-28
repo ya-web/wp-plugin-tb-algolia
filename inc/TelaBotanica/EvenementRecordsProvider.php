@@ -11,6 +11,7 @@ namespace WpAlgolia\TelaBotanica;
 
 use WP_CLI;
 use WpAlgolia\WpQueryRecordsProvider;
+use WpAlgolia\TelaBotanica\Utils;
 
 class EvenementRecordsProvider extends WpQueryRecordsProvider
 {
@@ -38,10 +39,10 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
 		$user = get_userdata($post->post_author);
 		if ($user instanceof \WP_User) {
 			$user_data = array(
-				'raw'          => $user->user_login,
-				'login'        => $user->user_login,
+				'user_id'      => $user->ID,
 				'display_name' => $user->display_name,
-				'id'           => $user->ID,
+				'user_url'     => $user->user_url,
+				'user_login'   => $user->user_login,
 			);
 		} else {
 			$user_data = array(
@@ -51,40 +52,66 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
 				'id'           => '',
 			);
 		}
-		$post_date = $post->post_date;
+		$post_date = get_post_time( 'U', false, $post );
+		$post_date_formatted = get_the_date( '', $post );
 		$post_date_gmt = $post->post_date_gmt;
-		$post_modified = $post->post_modified;
-		$post_modified_gmt = $post->post_modified_gmt;
+		$post_modified = get_post_modified_time( 'U', false, $post );
 		$comment_count = absint($post->comment_count);
 		$comment_status = absint($post->comment_status);
 		$ping_status = absint($post->ping_status);
-		$menu_order = absint($post->menu_order);
+		// $menu_order = absint($post->menu_order);
+
+		// Push all taxonomies by default, including custom ones.
+		$taxonomy_objects = get_object_taxonomies( $post->post_type, 'objects' );
+
+		$taxonomies = array();
+		// $taxonomies_hierarchical = array();
+		foreach ( $taxonomy_objects as $taxonomy ) {
+			$terms = get_the_terms( $post->ID, $taxonomy->name );
+			$terms = is_array( $terms ) ? $terms : array();
+
+			// if ( $taxonomy->hierarchical ) {
+			// 	$taxonomies_hierarchical[ $taxonomy->name ] = Utils::get_taxonomy_tree( $terms, $taxonomy->name );
+			// }
+
+			$taxonomies[ $taxonomy->name ] = wp_list_pluck( $terms, 'name' );
+		}
 
 		$record = array(
-			'objectID'            => (string) $post->ID,
-			'post_id'             => $post->ID,
-			'ID'                  => $post->ID,
-			'post_author'         => $user_data,
-			'post_date'           => $post_date,
-			'post_date_gmt'       => $post_date_gmt,
-			'post_title'          => $this->prepareTextContent(get_the_title($post->ID)),
-			'post_excerpt'        => $this->prepareTextContent($post->post_excerpt),
-			'post_content'        => mb_substr($this->prepareTextContent(apply_filters('the_content', $post->post_content)), 0, 600), // We only take the 600 first bytes of the content. If more is needed, content should be split across multiples records and the DISTINCT feature should be used.
-			'post_status'         => $post->post_status,
-			'post_name'           => $post->post_name,
-			'post_modified'       => $post_modified,
-			'post_modified_gmt'   => $post_modified_gmt,
-			'post_parent'         => $post->post_parent,
-			'post_type'           => $post->post_type,
-			'post_mime_type'      => $post->post_mime_type,
-			'permalink'           => get_permalink($post->ID),
-			'comment_count'       => $comment_count,
-			'comment_status'      => $comment_status,
-			// 'ping_status'         => $ping_status,
-			// 'menu_order'          => $menu_order,
-			'guid'                => $post->guid,
-			// 'wpml'                => $langInfo,
-			//'site_id'         => get_current_blog_id(),
+			'objectID'                 => (string) $post->ID,
+			'post_id'                  => $post->ID,
+			'post_author'              => $user_data,
+			'post_date'                => $post_date,
+			'post_date_formatted'      => $post_date_formatted,
+			'post_date_gmt'            => $post_date_gmt,
+			'post_title'               => $this->prepareTextContent(get_the_title($post->ID)),
+			'post_excerpt'             => $this->prepareTextContent($post->post_excerpt),
+			'post_content'             => mb_substr($this->prepareTextContent(apply_filters('the_content', $post->post_content)), 0, 600), // We only take the 600 first bytes of the content. If more is needed, content should be split across multiples records and the DISTINCT feature should be used.
+			'post_status'              => $post->post_status,
+			'post_name'                => $post->post_name,
+			'post_modified'            => $post_modified,
+			'post_parent'              => $post->post_parent,
+			'post_type'                => $post->post_type,
+			'post_mime_type'           => $post->post_mime_type,
+			'permalink'                => get_permalink($post->ID),
+			'comment_count'            => $comment_count,
+			'comment_status'           => $comment_status,
+			// 'ping_status'              => $ping_status,
+			// 'menu_order'               => $menu_order,
+			'guid'                     => $post->guid,
+			// 'wpml'                     => $langInfo,
+			//'site_id'                   => get_current_blog_id(),
+			'taxonomies'               => $taxonomies,
+			// 'taxonomies_hierarchical'  => $taxonomies_hierarchical,
+
+			// specific to evenements
+			'event_date'               => get_field('date', $post->ID),
+			'event_date_end'           => get_field('date_end', $post->ID),
+			'event_description'        => get_field('description', $post->ID),
+			'event_is_free'            => get_field('is_free', $post->ID),
+			'event_prices'             => get_field('prices', $post->ID),
+			'event_contact'            => get_field('contact', $post->ID),
+			'event_place'              => get_field('place', $post->ID),
 		);
 
 		// Retrieve featured image.
