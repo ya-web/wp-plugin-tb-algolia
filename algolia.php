@@ -33,6 +33,11 @@ add_action(
 		require_once 'inc/BuddypressGroupsIndex.php';
 
 		// TelaBotanica dependencies.
+		// actualites
+		require_once 'inc/TelaBotanica/ActualiteRecordsProvider.php';
+		require_once 'inc/TelaBotanica/ActualitesIndexSettingsFactory.php';
+		require_once 'inc/TelaBotanica/ActualiteChangeListener.php';
+		// projets
 		require_once 'inc/TelaBotanica/ProjetRecordsProvider.php';
 		require_once 'inc/TelaBotanica/ProjetsIndexSettingsFactory.php';
 		require_once 'inc/TelaBotanica/ProjetChangeListener.php';
