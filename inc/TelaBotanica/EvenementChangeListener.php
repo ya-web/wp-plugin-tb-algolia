@@ -20,8 +20,6 @@ class EvenementChangeListener
 
 	private $postType = 'post';
 
-	private $categorySlug = 'evenements';
-
 	/**
 	 * @param PostsIndex $index
 	 */
@@ -44,20 +42,8 @@ class EvenementChangeListener
 			return;
 		}
 
-		// Should be in Evenements category
-		$category_evenements = get_category_by_slug( $this->categorySlug );
-		$category = get_the_category( $postId );
-		if (empty($category)) {
+		if (!$this->index->getRecordsProvider()->shouldIndex($post)) {
 			return;
-		}
-		$category_parent_id = $category[0]->category_parent;
-		if ( $category_evenements->cat_ID !== $category_parent_id ) {
-			return;
-		}
-
-		// Should be published
-		if ($post->post_status !== 'publish' || !empty($post->post_password)) {
-			return $this->deleteRecords($postId);
 		}
 
 		$this->index->pushRecordsForPost($post);
@@ -69,6 +55,7 @@ class EvenementChangeListener
 	public function deleteRecords($postId)
 	{
 		$post = get_post($postId);
+
 		if ($post instanceof \WP_Post && $post->post_type === $this->postType) {
 			$this->index->deleteRecordsForPost($post);
 		}

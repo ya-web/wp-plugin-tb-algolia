@@ -31,24 +31,7 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
 		// $current_lang = $sitepress->get_current_language(); //save current language
 		// $sitepress->switch_lang($langInfo['language_code']);
 
-		// Should be in Evenements category
-		$category_evenements = get_category_by_slug( $this->categorySlug );
-		WP_CLI::debug((string) $category_evenements->id);
-		WP_CLI::debug((string) $post->id);
-		$category = get_the_category( $post->id );
-		WP_CLI::debug((string) $category->id);
-		if (empty($category)) {
-			return array();
-		}
-		$category_parent_id = $category[0]->category_parent;
-		WP_CLI::debug($category_parent_id);
-		if ( $category_evenements->cat_ID !== $category_parent_id ) {
-			return array();
-		}
-
-		// Should be published
-		WP_CLI::debug($post->post_status);
-		if ($post->post_status !== 'publish' || !empty($post->post_password)) {
+		if (!$this->shouldIndex($post)) {
 			return array();
 		}
 
@@ -97,8 +80,8 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
 			'permalink'           => get_permalink($post->ID),
 			'comment_count'       => $comment_count,
 			'comment_status'      => $comment_status,
-			'ping_status'         => $ping_status,
-			'menu_order'          => $menu_order,
+			// 'ping_status'         => $ping_status,
+			// 'menu_order'          => $menu_order,
 			'guid'                => $post->guid,
 			// 'wpml'                => $langInfo,
 			//'site_id'         => get_current_blog_id(),
@@ -115,6 +98,32 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
 		// $sitepress->switch_lang($current_lang); // restore previous language
 
 		return array($record);
+	}
+
+	/**
+	 * @param \WP_Post $post
+	 *
+	 * @return boolean
+	 */
+	public function shouldIndex(\WP_Post $post)
+	{
+		// Should be in Evenements category
+		$category_evenements = get_category_by_slug( $this->categorySlug );
+		$category = get_the_category( $post->ID );
+		if (empty($category)) {
+			return false;
+		}
+		$category_parent_id = $category[0]->category_parent;
+		if ( $category_evenements->cat_ID !== $category_parent_id ) {
+			return false;
+		}
+
+		// Should be published
+		if ($post->post_status !== 'publish' || !empty($post->post_password)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
