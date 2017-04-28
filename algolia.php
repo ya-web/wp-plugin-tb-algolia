@@ -52,6 +52,13 @@ add_action(
 		// new \WpAlgolia\TelaBotanica\PostChangeListener($index);
 		// $indexRepository->add('posts', $index);
 
+		// Register "actualites" index.
+		$settings = new \WpAlgolia\TelaBotanica\ActualitesIndexSettingsFactory();
+		$recordsProvider = new \WpAlgolia\TelaBotanica\ActualiteRecordsProvider();
+		$index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'actualites', $algoliaClient, $settings->create(), $recordsProvider);
+		new \WpAlgolia\TelaBotanica\ActualiteChangeListener($index);
+		$indexRepository->add('actualites', $index);
+
 		// Register "projets" index
 		$settings = new \WpAlgolia\TelaBotanica\ProjetsIndexSettingsFactory();
 		$recordsProvider = new \WpAlgolia\TelaBotanica\ProjetRecordsProvider();
