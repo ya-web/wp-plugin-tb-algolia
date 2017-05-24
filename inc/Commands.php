@@ -41,17 +41,17 @@ class Commands extends WP_CLI_Command
      */
     public function list($args, $assoc_args)
     {
-      $indices = $this->indexRepository->all();
-      $list = [];
+        $indices = $this->indexRepository->all();
+        $list = [];
 
-      foreach ($indices as $key => $index) {
-        $list[] = [
-          'key' => $key,
+        foreach ($indices as $key => $index) {
+            $list[] = [
+          'key'  => $key,
           'name' => $index->getName()
         ];
-      }
+        }
 
-      WP_CLI\Utils\format_items( 'table', $list, array( 'key', 'name' ) );
+        WP_CLI\Utils\format_items('table', $list, ['key', 'name']);
     }
 
     /**
