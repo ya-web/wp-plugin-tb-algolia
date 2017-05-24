@@ -26,9 +26,9 @@ class PostChangeListener
     public function __construct(PostsIndex $index)
     {
         $this->index = $index;
-        add_action('save_post', array($this, 'pushRecords'), 10, 2);
-        add_action('before_delete_post', array($this, 'deleteRecords'));
-        add_action('wp_trash_post', array($this, 'deleteRecords'));
+        add_action('save_post', [$this, 'pushRecords'], 10, 2);
+        add_action('before_delete_post', [$this, 'deleteRecords']);
+        add_action('wp_trash_post', [$this, 'deleteRecords']);
     }
 
     /**

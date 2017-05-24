@@ -13,50 +13,54 @@ use WpAlgolia\BuddypressGroupsIndex;
 
 class ProjetChangeListener
 {
-	/**
-	 * @var ProjetsIndex
-	 */
-	private $index;
+    /**
+     * @var ProjetsIndex
+     */
+    private $index;
 
-	/**
-	 * @param ProjetsIndex $index
-	 */
-	public function __construct(BuddypressGroupsIndex $index)
-	{
-		$this->index = $index;
-		add_action('groups_group_after_save', array($this, 'pushRecords'));
-		add_action('bp_groups_delete_group', array($this, 'deleteRecords'));
-	}
+    /**
+     * @param ProjetsIndex $index
+     */
+    public function __construct(BuddypressGroupsIndex $index)
+    {
+        $this->index = $index;
+        add_action('groups_group_after_save', [$this, 'pushRecords']);
+        add_action('bp_groups_delete_group', [$this, 'deleteRecords']);
+    }
 
-	/**
-	 * @param \BP_Groups_Group $group
-	 */
-	public function pushRecords(\BP_Groups_Group $group)
-	{
-		$should_index = true;
+    /**
+     * @param \BP_Groups_Group $group
+     */
+    public function pushRecords(\BP_Groups_Group $group)
+    {
+        $should_index = true;
 
-		// index only public groups
-		$visibility = bp_get_group_status($group);
-		if ( !in_array( $visibility, ['public', 'private']) ) $should_index = false;
+        // index only public groups
+        $visibility = bp_get_group_status($group);
+        if (!in_array($visibility, ['public', 'private'])) {
+            $should_index = false;
+        }
 
-		// compatibility with bp-moderate-group-creation plugin
-		$published_state = groups_get_groupmeta($group->id, 'published');
-		if ( '0' === $published_state ) $should_index = false;
+        // compatibility with bp-moderate-group-creation plugin
+        $published_state = groups_get_groupmeta($group->id, 'published');
+        if ('0' === $published_state) {
+            $should_index = false;
+        }
 
-		if ($should_index) {
-			$this->index->pushRecordsForGroup($group);
-		} else {
-			$this->deleteRecords($group);
-		}
-	}
+        if ($should_index) {
+            $this->index->pushRecordsForGroup($group);
+        } else {
+            $this->deleteRecords($group);
+        }
+    }
 
-	/**
-	 * @param \BP_Groups_Group $group
-	 */
-	public function deleteRecords(\BP_Groups_Group $group)
-	{
-		if ($group instanceof \BP_Groups_Group) {
-			$this->index->deleteRecordsForGroup($group);
-		}
-	}
+    /**
+     * @param \BP_Groups_Group $group
+     */
+    public function deleteRecords(\BP_Groups_Group $group)
+    {
+        if ($group instanceof \BP_Groups_Group) {
+            $this->index->deleteRecordsForGroup($group);
+        }
+    }
 }
