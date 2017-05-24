@@ -1,0 +1,11 @@
+preset: recommended
+
+risky: false
+
+disabled:
+  - concat_without_spaces
+  - trailing_comma_in_multiline_array
+
+enabled:
+  - concat_with_spaces
+  - phpdoc_annotation_without_dot
