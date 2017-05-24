@@ -19,24 +19,24 @@ class PostsIndexSettingsFactory
     public function create()
     {
         return new IndexSettings(
-            array(
-                'searchableAttributes' => array(
+            [
+                'searchableAttributes' => [
                     'unordered(post_title)',
                     'unordered(content)',
-                ),
-                'customRanking' => array(
+                ],
+                'customRanking' => [
                     'desc(post_date)',
-                ),
-                'attributesForFaceting' => array(
+                ],
+                'attributesForFaceting' => [
                     'tags',
                     'post_author',
                     // 'wpml.language_code',
-                ),
-                'attributesToSnippet' => array(
+                ],
+                'attributesToSnippet' => [
                     'content:10',
-                ),
+                ],
                 'snippetEllipsisText' => '…',
-            )
+            ]
         );
     }
 }
