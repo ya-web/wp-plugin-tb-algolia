@@ -9,3 +9,7 @@ disabled:
 enabled:
   - concat_with_spaces
   - phpdoc_annotation_without_dot
+
+finder:
+  exclude:
+    - "libs"
