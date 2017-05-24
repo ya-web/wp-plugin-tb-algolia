@@ -20,7 +20,7 @@ abstract class WpQueryRecordsProvider implements RecordsProvider
      */
     public function getTotalPagesCount($perPage)
     {
-        $results = $this->newQuery(array('posts_per_page' => (int) $perPage));
+        $results = $this->newQuery(['posts_per_page' => (int) $perPage]);
 
         return (int) $results->max_num_pages;
     }
@@ -34,10 +34,10 @@ abstract class WpQueryRecordsProvider implements RecordsProvider
     public function getRecords($page, $perPage)
     {
         $query = $this->newQuery(
-            array(
+            [
                 'posts_per_page' => $perPage,
                 'paged'          => $page,
-            )
+            ]
         );
 
         return $this->getRecordsForQuery($query);
@@ -53,7 +53,7 @@ abstract class WpQueryRecordsProvider implements RecordsProvider
         $post = get_post($id);
 
         if (!$post instanceof \WP_Post) {
-            return array();
+            return [];
         }
 
         return $this->getRecordsForPost($post);
@@ -76,7 +76,7 @@ abstract class WpQueryRecordsProvider implements RecordsProvider
      *
      * @return \WP_Query
      */
-    private function newQuery(array $args = array())
+    private function newQuery(array $args = [])
     {
         $defaultArgs = $this->getDefaultQueryArgs();
 
@@ -93,7 +93,7 @@ abstract class WpQueryRecordsProvider implements RecordsProvider
      */
     private function getRecordsForQuery(\WP_Query $query)
     {
-        $records = array();
+        $records = [];
         foreach ($query->posts as $post) {
             $post = get_post($post);
             if (!$post instanceof \WP_Post) {

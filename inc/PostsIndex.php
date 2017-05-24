@@ -63,7 +63,7 @@ class PostsIndex extends Index
     public function deleteRecordsForPost(\WP_Post $post)
     {
         $records = $this->recordsProvider->getRecordsForPost($post);
-        $recordIds = array();
+        $recordIds = [];
         foreach ($records as $record) {
             if (!isset($record['objectID'])) {
                 continue;
