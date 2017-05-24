@@ -6,72 +6,69 @@
  * Version: 0.2.0
  * Author Name: Hans Lemuet <hans@etaminstudio.com>
  */
-
 add_action(
-	'plugins_loaded',
-	function () {
+    'plugins_loaded',
+    function () {
+        if (!defined('ALGOLIA_APPLICATION_ID') || !defined('ALGOLIA_ADMIN_API_KEY')) {
+            // Unless we have access to the Algolia credentials, stop here.
+            return;
+        }
 
-		if(!defined('ALGOLIA_APPLICATION_ID') || !defined('ALGOLIA_ADMIN_API_KEY')) {
-				// Unless we have access to the Algolia credentials, stop here.
-			return;
-		}
+        if (!defined('ALGOLIA_PREFIX')) {
+            define('ALGOLIA_PREFIX', 'prod_');
+        }
 
-		if(!defined('ALGOLIA_PREFIX')) {
-			define('ALGOLIA_PREFIX', 'prod_');
-		}
+        // Composer dependencies.
+        require_once 'libs/autoload.php';
 
-		// Composer dependencies.
-		require_once 'libs/autoload.php';
+        // Local dependencies.
+        require_once 'inc/InMemoryIndexRepository.php';
+        require_once 'inc/PostsIndex.php';
+        require_once 'inc/WpQueryRecordsProvider.php';
 
-		// Local dependencies.
-		require_once 'inc/InMemoryIndexRepository.php';
-		require_once 'inc/PostsIndex.php';
-		require_once 'inc/WpQueryRecordsProvider.php';
+        // Buddypress specific depenencies.
+        require_once 'inc/BuddypressGroupRecordsProvider.php';
+        require_once 'inc/BuddypressGroupsIndex.php';
 
-		// Buddypress specific depenencies.
-		require_once 'inc/BuddypressGroupRecordsProvider.php';
-		require_once 'inc/BuddypressGroupsIndex.php';
+        // TelaBotanica dependencies.
+        // actualites
+        require_once 'inc/TelaBotanica/ActualiteRecordsProvider.php';
+        require_once 'inc/TelaBotanica/ActualitesIndexSettingsFactory.php';
+        require_once 'inc/TelaBotanica/ActualiteChangeListener.php';
+        // projets
+        require_once 'inc/TelaBotanica/ProjetRecordsProvider.php';
+        require_once 'inc/TelaBotanica/ProjetsIndexSettingsFactory.php';
+        require_once 'inc/TelaBotanica/ProjetChangeListener.php';
 
-		// TelaBotanica dependencies.
-		// actualites
-		require_once 'inc/TelaBotanica/ActualiteRecordsProvider.php';
-		require_once 'inc/TelaBotanica/ActualitesIndexSettingsFactory.php';
-		require_once 'inc/TelaBotanica/ActualiteChangeListener.php';
-		// projets
-		require_once 'inc/TelaBotanica/ProjetRecordsProvider.php';
-		require_once 'inc/TelaBotanica/ProjetsIndexSettingsFactory.php';
-		require_once 'inc/TelaBotanica/ProjetChangeListener.php';
+        $indexRepository = new \WpAlgolia\InMemoryIndexRepository();
+        $algoliaClient = new \WpAlgolia\Client(ALGOLIA_APPLICATION_ID, ALGOLIA_ADMIN_API_KEY);
 
-		$indexRepository = new \WpAlgolia\InMemoryIndexRepository();
-		$algoliaClient = new \WpAlgolia\Client(ALGOLIA_APPLICATION_ID, ALGOLIA_ADMIN_API_KEY);
+        // Register article index.
+        // $settings = new \WpAlgolia\TelaBotanica\PostsIndexSettingsFactory();
+        // $recordsProvider = new \WpAlgolia\TelaBotanica\PostRecordsProvider();
+        // $index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'posts', $algoliaClient, $settings->create(), $recordsProvider);
+        // new \WpAlgolia\TelaBotanica\PostChangeListener($index);
+        // $indexRepository->add('posts', $index);
 
-		// Register article index.
-		// $settings = new \WpAlgolia\TelaBotanica\PostsIndexSettingsFactory();
-		// $recordsProvider = new \WpAlgolia\TelaBotanica\PostRecordsProvider();
-		// $index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'posts', $algoliaClient, $settings->create(), $recordsProvider);
-		// new \WpAlgolia\TelaBotanica\PostChangeListener($index);
-		// $indexRepository->add('posts', $index);
+        // Register "actualites" index.
+        $settings = new \WpAlgolia\TelaBotanica\ActualitesIndexSettingsFactory();
+        $recordsProvider = new \WpAlgolia\TelaBotanica\ActualiteRecordsProvider();
+        $index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'actualites', $algoliaClient, $settings->create(), $recordsProvider);
+        new \WpAlgolia\TelaBotanica\ActualiteChangeListener($index);
+        $indexRepository->add('actualites', $index);
 
-		// Register "actualites" index.
-		$settings = new \WpAlgolia\TelaBotanica\ActualitesIndexSettingsFactory();
-		$recordsProvider = new \WpAlgolia\TelaBotanica\ActualiteRecordsProvider();
-		$index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'actualites', $algoliaClient, $settings->create(), $recordsProvider);
-		new \WpAlgolia\TelaBotanica\ActualiteChangeListener($index);
-		$indexRepository->add('actualites', $index);
+        // Register "projets" index
+        $settings = new \WpAlgolia\TelaBotanica\ProjetsIndexSettingsFactory();
+        $recordsProvider = new \WpAlgolia\TelaBotanica\ProjetRecordsProvider();
+        $index = new \WpAlgolia\BuddypressGroupsIndex(ALGOLIA_PREFIX . 'projets', $algoliaClient, $settings->create(), $recordsProvider);
+        new \WpAlgolia\TelaBotanica\ProjetChangeListener($index);
+        $indexRepository->add('projets', $index);
 
-		// Register "projets" index
-		$settings = new \WpAlgolia\TelaBotanica\ProjetsIndexSettingsFactory();
-		$recordsProvider = new \WpAlgolia\TelaBotanica\ProjetRecordsProvider();
-		$index = new \WpAlgolia\BuddypressGroupsIndex(ALGOLIA_PREFIX . 'projets', $algoliaClient, $settings->create(), $recordsProvider);
-		new \WpAlgolia\TelaBotanica\ProjetChangeListener($index);
-		$indexRepository->add('projets', $index);
-
-		// WP CLI commands.
-		if (defined('WP_CLI') && WP_CLI) {
-			require_once 'inc/Commands.php';
-			$commands = new \WpAlgolia\Commands($indexRepository);
-			WP_CLI::add_command('algolia', $commands);
-		}
-
-	}
+        // WP CLI commands.
+        if (defined('WP_CLI') && WP_CLI) {
+            require_once 'inc/Commands.php';
+            $commands = new \WpAlgolia\Commands($indexRepository);
+            WP_CLI::add_command('algolia', $commands);
+        }
+    }
 );

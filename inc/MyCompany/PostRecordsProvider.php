@@ -29,19 +29,19 @@ class PostRecordsProvider extends WpQueryRecordsProvider
 
         $user = get_userdata($post->post_author);
         if ($user instanceof \WP_User) {
-            $user_data = array(
+            $user_data = [
                 'raw'          => $user->user_login,
                 'login'        => $user->user_login,
                 'display_name' => $user->display_name,
                 'id'           => $user->ID,
-            );
+            ];
         } else {
-            $user_data = array(
+            $user_data = [
                 'raw'          => '',
                 'login'        => '',
                 'display_name' => '',
                 'id'           => '',
-            );
+            ];
         }
         $post_date = $post->post_date;
         $post_date_gmt = $post->post_date_gmt;
@@ -52,7 +52,7 @@ class PostRecordsProvider extends WpQueryRecordsProvider
         $ping_status = absint($post->ping_status);
         $menu_order = absint($post->menu_order);
 
-        $record = array(
+        $record = [
             'objectID'            => (string) $post->ID,
             'post_id'             => $post->ID,
             'ID'                  => $post->ID,
@@ -77,7 +77,7 @@ class PostRecordsProvider extends WpQueryRecordsProvider
             'guid'                => $post->guid,
             // 'wpml'                => $langInfo,
             //'site_id'         => get_current_blog_id(),
-        );
+        ];
 
         // Retrieve featured image.
         $featuredImage = get_the_post_thumbnail_url($post, 'post-thumbnail');
@@ -89,7 +89,7 @@ class PostRecordsProvider extends WpQueryRecordsProvider
 
         // $sitepress->switch_lang($current_lang); // restore previous language
 
-        return array($record);
+        return [$record];
     }
 
     /**
@@ -97,11 +97,11 @@ class PostRecordsProvider extends WpQueryRecordsProvider
      */
     protected function getDefaultQueryArgs()
     {
-        return array(
+        return [
             'post_type'        => 'post',
             'post_status'      => 'publish',
             'suppress_filters' => true
-        );
+        ];
     }
 
     private function prepareTextContent($content)

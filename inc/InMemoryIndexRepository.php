@@ -17,7 +17,7 @@ class InMemoryIndexRepository implements Repository
     /**
      * @var Index[]
      */
-    private $indices = array();
+    private $indices = [];
 
     /**
      * @param string $key

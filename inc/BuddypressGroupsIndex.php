@@ -15,110 +15,110 @@ use WpAlgolia\Index\RecordsProvider;
 
 class BuddypressGroupsIndex extends Index
 {
-	/**
-	 * @var string
-	 */
-	private $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-	/**
-	 * @var Client
-	 */
-	private $client;
+    /**
+     * @var Client
+     */
+    private $client;
 
-	/**
-	 * @var IndexSettings
-	 */
-	private $settings;
+    /**
+     * @var IndexSettings
+     */
+    private $settings;
 
-	/**
-	 * @var WpQueryRecordsProvider
-	 */
-	private $recordsProvider;
+    /**
+     * @var WpQueryRecordsProvider
+     */
+    private $recordsProvider;
 
-	/**
-	 * @param string                         $name
-	 * @param Client                         $client
-	 * @param IndexSettings                  $settings
-	 * @param BuddypressGroupRecordsProvider $recordsProvider
-	 */
-	public function __construct($name, Client $client, IndexSettings $settings, BuddypressGroupRecordsProvider $recordsProvider)
-	{
-		$this->name = $name;
-		$this->client = $client;
-		$this->settings = $settings;
-		$this->recordsProvider = $recordsProvider;
-	}
+    /**
+     * @param string                         $name
+     * @param Client                         $client
+     * @param IndexSettings                  $settings
+     * @param BuddypressGroupRecordsProvider $recordsProvider
+     */
+    public function __construct($name, Client $client, IndexSettings $settings, BuddypressGroupRecordsProvider $recordsProvider)
+    {
+        $this->name = $name;
+        $this->client = $client;
+        $this->settings = $settings;
+        $this->recordsProvider = $recordsProvider;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param \BP_Groups_Group $group
-	 */
-	public function deleteRecordsForGroup(\BP_Groups_Group $group)
-	{
-		$records = $this->recordsProvider->getRecordsForGroup($group);
-		$recordIds = array();
-		foreach ($records as $record) {
-			if (!isset($record['objectID'])) {
-				continue;
-			}
+    /**
+     * @param \BP_Groups_Group $group
+     */
+    public function deleteRecordsForGroup(\BP_Groups_Group $group)
+    {
+        $records = $this->recordsProvider->getRecordsForGroup($group);
+        $recordIds = [];
+        foreach ($records as $record) {
+            if (!isset($record['objectID'])) {
+                continue;
+            }
 
-			$recordIds[] = $record['objectID'];
-		}
+            $recordIds[] = $record['objectID'];
+        }
 
-		if (empty($recordIds)) {
-			return;
-		}
+        if (empty($recordIds)) {
+            return;
+        }
 
-		$this->getAlgoliaIndex()->deleteObjects($recordIds);
-	}
+        $this->getAlgoliaIndex()->deleteObjects($recordIds);
+    }
 
-	/**
-	 * @param \BP_Groups_Group $group
-	 *
-	 * @return int
-	 */
-	public function pushRecordsForGroup(\BP_Groups_Group $group)
-	{
-		$records = $this->recordsProvider->getRecordsForGroup($group);
-		$totalRecordsCount = count($records);
+    /**
+     * @param \BP_Groups_Group $group
+     *
+     * @return int
+     */
+    public function pushRecordsForGroup(\BP_Groups_Group $group)
+    {
+        $records = $this->recordsProvider->getRecordsForGroup($group);
+        $totalRecordsCount = count($records);
 
-		if (empty($totalRecordsCount)) {
-			return 0;
-		}
+        if (empty($totalRecordsCount)) {
+            return 0;
+        }
 
-		$this->getAlgoliaIndex()->addObjects($records);
+        $this->getAlgoliaIndex()->addObjects($records);
 
-		return $totalRecordsCount;
-	}
+        return $totalRecordsCount;
+    }
 
-	/**
-	 * @return RecordsProvider
-	 */
-	public function getRecordsProvider()
-	{
-		return $this->recordsProvider;
-	}
+    /**
+     * @return RecordsProvider
+     */
+    public function getRecordsProvider()
+    {
+        return $this->recordsProvider;
+    }
 
-	/**
-	 * @return IndexSettings
-	 */
-	protected function getSettings()
-	{
-		return $this->settings;
-	}
+    /**
+     * @return IndexSettings
+     */
+    protected function getSettings()
+    {
+        return $this->settings;
+    }
 
-	/**
-	 * @return Client
-	 */
-	protected function getAlgoliaClient()
-	{
-		return $this->client;
-	}
+    /**
+     * @return Client
+     */
+    protected function getAlgoliaClient()
+    {
+        return $this->client;
+    }
 }

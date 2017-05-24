@@ -13,33 +13,33 @@ use WpAlgolia\Index\IndexSettings;
 
 class ProjetsIndexSettingsFactory
 {
-	/**
-	 * @return IndexSettings
-	 */
-	public function create()
-	{
-		return new IndexSettings(
-			array(
-				'searchableAttributes' => array(
-					'name',
-					'unordered(description)',
-				),
-				'attributesForFaceting' => array(
-					'archive',
-					'tela',
-					'categories',
-				),
-				'unretrievableAttributes' => array(
-					'members_ids',
-				),
-				'customRanking' => array(
-					'desc(member_count)',
-				),
-				'attributesToSnippet' => array(
-					'description:10',
-				),
-				'snippetEllipsisText' => '…',
-			)
-		);
-	}
+    /**
+     * @return IndexSettings
+     */
+    public function create()
+    {
+        return new IndexSettings(
+            [
+                'searchableAttributes' => [
+                    'name',
+                    'unordered(description)',
+                ],
+                'attributesForFaceting' => [
+                    'archive',
+                    'tela',
+                    'categories',
+                ],
+                'unretrievableAttributes' => [
+                    'members_ids',
+                ],
+                'customRanking' => [
+                    'desc(member_count)',
+                ],
+                'attributesToSnippet' => [
+                    'description:10',
+                ],
+                'snippetEllipsisText' => '…',
+            ]
+        );
+    }
 }
