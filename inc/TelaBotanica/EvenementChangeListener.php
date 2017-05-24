@@ -13,51 +13,51 @@ use WpAlgolia\PostsIndex;
 
 class EvenementChangeListener
 {
-	/**
-	 * @var PostsIndex
-	 */
-	private $index;
+    /**
+     * @var PostsIndex
+     */
+    private $index;
 
-	private $postType = 'post';
+    private $postType = 'post';
 
-	/**
-	 * @param PostsIndex $index
-	 */
-	public function __construct(PostsIndex $index)
-	{
-		$this->index = $index;
-		add_action('save_post', array($this, 'pushRecords'), 10, 2);
-		add_action('before_delete_post', array($this, 'deleteRecords'));
-		add_action('wp_trash_post', array($this, 'deleteRecords'));
-	}
+    /**
+     * @param PostsIndex $index
+     */
+    public function __construct(PostsIndex $index)
+    {
+        $this->index = $index;
+        add_action('save_post', [$this, 'pushRecords'], 10, 2);
+        add_action('before_delete_post', [$this, 'deleteRecords']);
+        add_action('wp_trash_post', [$this, 'deleteRecords']);
+    }
 
-	/**
-	 * @param int      $postId
-	 * @param \WP_Post $post
-	 */
-	public function pushRecords($postId, $post)
-	{
-		// Should be a post
-		if ($this->postType !== $post->post_type) {
-			return;
-		}
+    /**
+     * @param int      $postId
+     * @param \WP_Post $post
+     */
+    public function pushRecords($postId, $post)
+    {
+        // Should be a post
+        if ($this->postType !== $post->post_type) {
+            return;
+        }
 
-		if (!$this->index->getRecordsProvider()->shouldIndex($post)) {
-			return;
-		}
+        if (!$this->index->getRecordsProvider()->shouldIndex($post)) {
+            return;
+        }
 
-		$this->index->pushRecordsForPost($post);
-	}
+        $this->index->pushRecordsForPost($post);
+    }
 
-	/**
-	 * @param int $postId
-	 */
-	public function deleteRecords($postId)
-	{
-		$post = get_post($postId);
+    /**
+     * @param int $postId
+     */
+    public function deleteRecords($postId)
+    {
+        $post = get_post($postId);
 
-		if ($post instanceof \WP_Post && $post->post_type === $this->postType) {
-			$this->index->deleteRecordsForPost($post);
-		}
-	}
+        if ($post instanceof \WP_Post && $post->post_type === $this->postType) {
+            $this->index->deleteRecordsForPost($post);
+        }
+    }
 }

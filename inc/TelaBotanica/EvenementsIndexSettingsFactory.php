@@ -13,39 +13,39 @@ use WpAlgolia\Index\IndexSettings;
 
 class EvenementsIndexSettingsFactory
 {
-	/**
-	 * @return IndexSettings
-	 */
-	public function create()
-	{
-		return new IndexSettings(
-			array(
-				'searchableAttributes' => array(
-					'unordered(post_title)',
-					'unordered(taxonomies)',
-					'unordered(post_content)',
-					'unordered(event_description)',
-					'unordered(event_place)',
-					'unordered(event_contact)',
-				),
-				'attributesForFaceting' => array(
-					'taxonomies',
-					'taxonomies_hierarchical',
-					'post_author.display_name',
-					'post_author.is_free',
-				),
-				'customRanking' => array(
-					'desc(post_date)',
-				),
-				'attributeForDistinct' => 'post_id',
-				'distinct' => true,
-				'attributesToSnippet' => array(
-					'post_title:30',
-					'event_description:30',
-					'post_content:30',
-				),
-				'snippetEllipsisText' => '…',
-			)
-		);
-	}
+    /**
+     * @return IndexSettings
+     */
+    public function create()
+    {
+        return new IndexSettings(
+            [
+                'searchableAttributes' => [
+                    'unordered(post_title)',
+                    'unordered(taxonomies)',
+                    'unordered(post_content)',
+                    'unordered(event_description)',
+                    'unordered(event_place)',
+                    'unordered(event_contact)',
+                ],
+                'attributesForFaceting' => [
+                    'taxonomies',
+                    'taxonomies_hierarchical',
+                    'post_author.display_name',
+                    'post_author.is_free',
+                ],
+                'customRanking' => [
+                    'desc(post_date)',
+                ],
+                'attributeForDistinct' => 'post_id',
+                'distinct'             => true,
+                'attributesToSnippet'  => [
+                    'post_title:30',
+                    'event_description:30',
+                    'post_content:30',
+                ],
+                'snippetEllipsisText' => '…',
+            ]
+        );
+    }
 }
