@@ -22,12 +22,13 @@ class ActualitesIndexSettingsFactory
             [
                 'searchableAttributes' => [
                     'unordered(post_title)',
-                    'unordered(taxonomies)',
                     'unordered(post_content)',
+                    'unordered(category)',
+                    'unordered(post_tag)',
                 ],
                 'attributesForFaceting' => [
-                    'taxonomies',
-                    'taxonomies_hierarchical',
+                    'category',
+                    'post_tag',
                     'post_author.display_name',
                     'post_author.is_free',
                 ],

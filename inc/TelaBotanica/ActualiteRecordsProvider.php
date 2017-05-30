@@ -58,22 +58,6 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
         $ping_status = absint($post->ping_status);
         // $menu_order = absint($post->menu_order);
 
-        // Push all taxonomies by default, including custom ones.
-        $taxonomy_objects = get_object_taxonomies($post->post_type, 'objects');
-
-        $taxonomies = [];
-        // $taxonomies_hierarchical = array();
-        foreach ($taxonomy_objects as $taxonomy) {
-            $terms = get_the_terms($post->ID, $taxonomy->name);
-            $terms = is_array($terms) ? $terms : [];
-
-            // if ( $taxonomy->hierarchical ) {
-            // 	$taxonomies_hierarchical[ $taxonomy->name ] = Utils::get_taxonomy_tree( $terms, $taxonomy->name );
-            // }
-
-            $taxonomies[$taxonomy->name] = wp_list_pluck($terms, 'name');
-        }
-
         $record = [
             'objectID'                 => (string) $post->ID,
             'post_id'                  => $post->ID,
@@ -98,9 +82,22 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
             'guid'                     => $post->guid,
             // 'wpml'                     => $langInfo,
             //'site_id'                   => get_current_blog_id(),
-            'taxonomies'               => $taxonomies,
-            // 'taxonomies_hierarchical'  => $taxonomies_hierarchical,
         ];
+
+        // Push all taxonomies by default, including custom ones.
+        $taxonomy_objects = get_object_taxonomies($post->post_type, 'objects');
+
+        // $taxonomies_hierarchical = array();
+        foreach ($taxonomy_objects as $taxonomy) {
+            $terms = get_the_terms($post->ID, $taxonomy->name);
+            $terms = is_array($terms) ? $terms : [];
+
+            // if ( $taxonomy->hierarchical ) {
+            // 	$taxonomies_hierarchical[ $taxonomy->name ] = Utils::get_taxonomy_tree( $terms, $taxonomy->name );
+            // }
+
+            $record[$taxonomy->name] = wp_list_pluck($terms, 'name');
+        }
 
         // Retrieve featured image.
         $featuredImage = get_the_post_thumbnail_url($post, 'post-thumbnail');
