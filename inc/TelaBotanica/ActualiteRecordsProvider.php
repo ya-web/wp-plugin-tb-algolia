@@ -49,8 +49,6 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
                 'user_login'    => '',
             ];
         }
-        $post_date_formatted = get_the_date('', $post);
-        $post_date_gmt = $post->post_date_gmt;
         $post_date = [
           'formatted' => sprintf(_x('%s à %s', '%s = date et %s = heure', 'telabotanica'),
             date_i18n(get_option('date_format'), get_post_time('U', false, $post)),
@@ -61,7 +59,6 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
         ];
         $comment_count = absint($post->comment_count);
         $comment_status = absint($post->comment_status);
-        $ping_status = absint($post->ping_status);
         // $menu_order = absint($post->menu_order);
 
         $record = [
@@ -79,11 +76,11 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
             'permalink'                => get_permalink($post->ID),
             'comment_count'            => $comment_count,
             'comment_status'           => $comment_status,
-            // 'ping_status'              => $ping_status,
             // 'menu_order'               => $menu_order,
-            'guid'                     => $post->guid,
+            // 'guid'                     => $post->guid,
             // 'wpml'                     => $langInfo,
             //'site_id'                   => get_current_blog_id(),
+            'post_classes'             => get_post_class('', $post->ID),
         ];
 
         // Push all taxonomies by default, including custom ones.
