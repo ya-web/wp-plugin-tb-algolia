@@ -11,9 +11,9 @@ namespace WpAlgolia\TelaBotanica;
 
 use WpAlgolia\WpQueryRecordsProvider;
 
-class ActualiteRecordsProvider extends WpQueryRecordsProvider
+class EvenementRecordsProvider extends WpQueryRecordsProvider
 {
-    private $categorySlug = 'actualites';
+    private $categorySlug = 'evenements';
 
     /**
      * @param \WP_Post $post
@@ -80,8 +80,42 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
             // 'guid'                     => $post->guid,
             // 'wpml'                     => $langInfo,
             //'site_id'                   => get_current_blog_id(),
-            'post_classes'             => get_post_class('', $post->ID),
+            'post_classes'             => get_post_class('is-event', $post->ID),
+
+            // specific to evenements
+            'event_description'        => get_field('description', $post->ID),
+            'event_is_free'            => get_field('is_free', $post->ID),
+            'event_prices'             => get_field('prices', $post->ID),
+            'event_contact'            => get_field('contact', $post->ID),
+            'event_place'              => get_field('place', $post->ID),
         ];
+
+        // Formatted place
+        if ($record['event_place'] && function_exists('telabotanica_format_place')) {
+            $record['event_place']->formatted = telabotanica_format_place($record['event_place']);
+        }
+
+        // Geoloc
+        if ($record['event_place'] && $record['event_place']->latlng) {
+            $record['_geoloc'] = $record['event_place']->latlng;
+            unset($record['event_place']->latlng);
+        }
+
+        // Event dates
+        $date_timestamp = strtotime(get_field('date', $post->ID, false));
+        $date_end_timestamp = strtotime(get_field('date_end', $post->ID, false));
+        $record['event_date'] = [
+            'datetime' => date_i18n('Y-m-d', $date_timestamp),
+            'day'      => date_i18n('j', $date_timestamp),
+            'month'    => date_i18n('M', $date_timestamp),
+            'year'     => date_i18n('Y', $date_timestamp),
+        ];
+        $record['event_date_end'] = $date_end_timestamp ? [
+            'datetime' => date_i18n('Y-m-d', $date_end_timestamp),
+            'day'      => date_i18n('j', $date_end_timestamp),
+            'month'    => date_i18n('M', $date_end_timestamp),
+            'year'     => date_i18n('Y', $date_end_timestamp),
+        ] : null;
 
         // Push all taxonomies by default, including custom ones.
         $taxonomy_objects = get_object_taxonomies($post->post_type, 'objects');
@@ -105,7 +139,7 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
 
         // Retrieve featured image.
         $featuredImage = get_the_post_thumbnail_url($post, 'post-thumbnail');
-        $record['thumbnail'] = $featuredImage ? $featuredImage : '';
+        $record['featured_image'] = $featuredImage ? $featuredImage : '';
 
         // Retrieve tags.
         $tags = wp_get_post_tags($post->ID);
@@ -123,18 +157,18 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
      */
     public function shouldIndex(\WP_Post $post)
     {
-        // Should be in Actualites category
-        $category_actualites = get_category_by_slug($this->categorySlug);
+        // Should be in Evenements category
+        $category_evenements = get_category_by_slug($this->categorySlug);
         $category = get_the_category($post->ID);
         if (empty($category)) {
             return false;
         }
         $category_parent_id = $category[0]->category_parent;
-        if ($category_actualites->cat_ID !== $category_parent_id) {
+        if ($category_evenements->cat_ID !== $category_parent_id) {
             return false;
         }
 
-        // Should be published and not have a password
+        // Should be published
         if ($post->post_status !== 'publish' || !empty($post->post_password)) {
             return false;
         }

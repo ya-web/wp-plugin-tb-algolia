@@ -74,7 +74,7 @@ class Commands extends WP_CLI_Command
      *
      * ## EXAMPLES
      *
-     *     wp algolia re-index articles
+     *     wp algolia reIndex articles
      *
      * @when before_wp_load
      *
@@ -84,12 +84,12 @@ class Commands extends WP_CLI_Command
     public function reIndex($args, $assoc_args)
     {
         list($indexName) = $args;
-        $perPage = (int) $assoc_args['batch'];
+        $perPage = (int) @$assoc_args['batch'] ?: 1000;
         if ($perPage <= 0) {
             throw new \InvalidArgumentException('The "--batch" option should be greater than 0.');
         }
 
-        $clear = (bool) $assoc_args['clear'];
+        $clear = (bool) @$assoc_args['clear'];
 
         $index = $this->indexRepository->get($indexName);
 
