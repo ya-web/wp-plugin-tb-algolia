@@ -38,21 +38,27 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
             $user_data = [
                 'user_id'      => $user->ID,
                 'display_name' => $user->display_name,
-                'user_url'     => $user->user_url,
+                'permalink'    => bp_core_get_user_domain( $user->ID ),
                 'user_login'   => $user->user_login,
             ];
         } else {
             $user_data = [
-                'raw'          => '',
-                'login'        => '',
-                'display_name' => '',
-                'id'           => '',
+                'user_id'       => '',
+                'display_name'  => '',
+                'permalink'     => '',
+                'user_login'    => '',
             ];
         }
-        $post_date = get_post_time('U', false, $post);
         $post_date_formatted = get_the_date('', $post);
         $post_date_gmt = $post->post_date_gmt;
-        $post_modified = get_post_modified_time('U', false, $post);
+        $post_date = [
+          'formatted' => sprintf( _x( '%s à %s', '%s = date et %s = heure', 'telabotanica' ),
+            date_i18n( get_option( 'date_format' ), get_post_time('U', false, $post) ),
+            date_i18n( get_option( 'time_format' ), get_post_time('U', false, $post) )
+          ),
+          'timestamp' => get_post_time('U', false, $post),
+          'datetime' => get_post_time('Y-m-d\\TG:i:s\\Z', true, $post)
+        ];
         $comment_count = absint($post->comment_count);
         $comment_status = absint($post->comment_status);
         $ping_status = absint($post->ping_status);
@@ -63,17 +69,13 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
             'post_id'                  => $post->ID,
             'post_author'              => $user_data,
             'post_date'                => $post_date,
-            'post_date_formatted'      => $post_date_formatted,
-            'post_date_gmt'            => $post_date_gmt,
             'post_title'               => $this->prepareTextContent(get_the_title($post->ID)),
             'post_excerpt'             => $this->prepareTextContent($post->post_excerpt),
             'post_content'             => mb_substr($this->prepareTextContent(apply_filters('the_content', $post->post_content)), 0, 600), // We only take the 600 first bytes of the content. If more is needed, content should be split across multiples records and the DISTINCT feature should be used.
             'post_status'              => $post->post_status,
             'post_name'                => $post->post_name,
-            'post_modified'            => $post_modified,
             'post_parent'              => $post->post_parent,
             'post_type'                => $post->post_type,
-            'post_mime_type'           => $post->post_mime_type,
             'permalink'                => get_permalink($post->ID),
             'comment_count'            => $comment_count,
             'comment_status'           => $comment_status,
@@ -87,21 +89,26 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
         // Push all taxonomies by default, including custom ones.
         $taxonomy_objects = get_object_taxonomies($post->post_type, 'objects');
 
-        // $taxonomies_hierarchical = array();
+        $record['category_links'] = [];
         foreach ($taxonomy_objects as $taxonomy) {
             $terms = get_the_terms($post->ID, $taxonomy->name);
             $terms = is_array($terms) ? $terms : [];
 
-            // if ( $taxonomy->hierarchical ) {
-            // 	$taxonomies_hierarchical[ $taxonomy->name ] = Utils::get_taxonomy_tree( $terms, $taxonomy->name );
-            // }
-
             $record[$taxonomy->name] = wp_list_pluck($terms, 'name');
+
+            if ('category' == $taxonomy->name) {
+              foreach ($terms as $category) {
+                $record['category_links'][] = [
+                  'href' => get_category_link( $category->term_id ),
+                  'text' => $category->name
+                ];
+              }
+            }
         }
 
         // Retrieve featured image.
         $featuredImage = get_the_post_thumbnail_url($post, 'post-thumbnail');
-        $record['featured_image'] = $featuredImage ? $featuredImage : '';
+        $record['thumbnail'] = $featuredImage ? $featuredImage : '';
 
         // Retrieve tags.
         $tags = wp_get_post_tags($post->ID);
