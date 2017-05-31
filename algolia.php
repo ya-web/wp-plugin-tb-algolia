@@ -31,6 +31,11 @@ add_action(
         require_once 'inc/BuddypressGroupsIndex.php';
 
         // TelaBotanica dependencies.
+        // actualites
+        require_once 'inc/TelaBotanica/ActualiteRecordsProvider.php';
+        require_once 'inc/TelaBotanica/ActualitesIndexSettingsFactory.php';
+        require_once 'inc/TelaBotanica/ActualiteChangeListener.php';
+        // projets
         require_once 'inc/TelaBotanica/ProjetRecordsProvider.php';
         require_once 'inc/TelaBotanica/ProjetsIndexSettingsFactory.php';
         require_once 'inc/TelaBotanica/ProjetChangeListener.php';
@@ -44,6 +49,13 @@ add_action(
         // $index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'posts', $algoliaClient, $settings->create(), $recordsProvider);
         // new \WpAlgolia\TelaBotanica\PostChangeListener($index);
         // $indexRepository->add('posts', $index);
+
+        // Register "actualites" index.
+        $settings = new \WpAlgolia\TelaBotanica\ActualitesIndexSettingsFactory();
+        $recordsProvider = new \WpAlgolia\TelaBotanica\ActualiteRecordsProvider();
+        $index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'actualites', $algoliaClient, $settings->create(), $recordsProvider);
+        new \WpAlgolia\TelaBotanica\ActualiteChangeListener($index);
+        $indexRepository->add('actualites', $index);
 
         // Register "projets" index
         $settings = new \WpAlgolia\TelaBotanica\ProjetsIndexSettingsFactory();
