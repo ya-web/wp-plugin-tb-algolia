@@ -105,16 +105,12 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
             'month'    => date_i18n('M', $date_timestamp),
             'year'     => date_i18n('Y', $date_timestamp),
         ];
-        if ($date_end_timestamp) {
-            $record['event_date_end'] = [
-                'datetime' => date_i18n('Y-m-d', $date_end_timestamp),
-                'day'      => date_i18n('j', $date_end_timestamp),
-                'month'    => date_i18n('M', $date_end_timestamp),
-                'year'     => date_i18n('Y', $date_end_timestamp),
-            ];
-        } else {
-            $record['event_date'] = null;
-        }
+        $record['event_date_end'] = $date_end_timestamp ? [
+            'datetime' => date_i18n('Y-m-d', $date_end_timestamp),
+            'day'      => date_i18n('j', $date_end_timestamp),
+            'month'    => date_i18n('M', $date_end_timestamp),
+            'year'     => date_i18n('Y', $date_end_timestamp),
+        ] : null;
 
         // Push all taxonomies by default, including custom ones.
         $taxonomy_objects = get_object_taxonomies($post->post_type, 'objects');
