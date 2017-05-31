@@ -90,6 +90,11 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
             'event_place'              => get_field('place', $post->ID),
         ];
 
+        // Formatted place
+        if ($record['event_place'] && function_exists('telabotanica_format_place')) {
+            $record['event_place']->formatted = telabotanica_format_place($record['event_place']);
+        }
+
         // Geoloc
         if ($record['event_place'] && $record['event_place']->latlng) {
             $record['_geoloc'] = $record['event_place']->latlng;

@@ -32,9 +32,10 @@ class EvenementsIndexSettingsFactory
                 'attributesForFaceting' => [
                     'category',
                     'post_tag',
-                    'post_author.display_name',
+                    // 'post_author.display_name',
                     'event_is_free',
                     'event_place.city',
+                    'event_place.country',
                 ],
                 'customRanking' => [
                     'desc(post_date)',
