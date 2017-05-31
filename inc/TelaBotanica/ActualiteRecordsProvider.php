@@ -38,7 +38,7 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
             $user_data = [
                 'user_id'      => $user->ID,
                 'display_name' => $user->display_name,
-                'permalink'    => bp_core_get_user_domain( $user->ID ),
+                'permalink'    => bp_core_get_user_domain($user->ID),
                 'user_login'   => $user->user_login,
             ];
         } else {
@@ -52,12 +52,12 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
         $post_date_formatted = get_the_date('', $post);
         $post_date_gmt = $post->post_date_gmt;
         $post_date = [
-          'formatted' => sprintf( _x( '%s à %s', '%s = date et %s = heure', 'telabotanica' ),
-            date_i18n( get_option( 'date_format' ), get_post_time('U', false, $post) ),
-            date_i18n( get_option( 'time_format' ), get_post_time('U', false, $post) )
+          'formatted' => sprintf(_x('%s à %s', '%s = date et %s = heure', 'telabotanica'),
+            date_i18n(get_option('date_format'), get_post_time('U', false, $post)),
+            date_i18n(get_option('time_format'), get_post_time('U', false, $post))
           ),
           'timestamp' => get_post_time('U', false, $post),
-          'datetime' => get_post_time('Y-m-d\\TG:i:s\\Z', true, $post)
+          'datetime'  => get_post_time('Y-m-d\\TG:i:s\\Z', true, $post)
         ];
         $comment_count = absint($post->comment_count);
         $comment_status = absint($post->comment_status);
@@ -97,12 +97,12 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
             $record[$taxonomy->name] = wp_list_pluck($terms, 'name');
 
             if ('category' == $taxonomy->name) {
-              foreach ($terms as $category) {
-                $record['category_links'][] = [
-                  'href' => get_category_link( $category->term_id ),
-                  'text' => $category->name
-                ];
-              }
+                foreach ($terms as $category) {
+                    $record['category_links'][] = [
+                        'href' => get_category_link($category->term_id),
+                        'text' => $category->name
+                    ];
+                }
             }
         }
 
