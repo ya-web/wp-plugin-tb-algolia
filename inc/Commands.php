@@ -28,6 +28,33 @@ class Commands extends WP_CLI_Command
     }
 
     /**
+     * List all available indices.
+     *
+     * ## EXAMPLES
+     *
+     *     wp algolia list
+     *
+     * @when before_wp_load
+     *
+     * @param mixed $args
+     * @param mixed $assoc_args
+     */
+    public function list($args, $assoc_args)
+    {
+        $indices = $this->indexRepository->all();
+        $list = [];
+
+        foreach ($indices as $key => $index) {
+            $list[] = [
+          'key'  => $key,
+          'name' => $index->getName()
+        ];
+        }
+
+        WP_CLI\Utils\format_items('table', $list, ['key', 'name']);
+    }
+
+    /**
      * Push all records to Algolia for a given index.
      *
      * ## OPTIONS
