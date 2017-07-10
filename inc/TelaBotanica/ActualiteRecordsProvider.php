@@ -130,7 +130,7 @@ class ActualiteRecordsProvider extends WpQueryRecordsProvider
             return false;
         }
         $category_parent_id = $category[0]->category_parent;
-        if ($category_actualites->cat_ID !== $category_parent_id) {
+        if (! isset($category_actualites->cat_ID) || $category_actualites->cat_ID !== $category_parent_id) {
             return false;
         }
 
