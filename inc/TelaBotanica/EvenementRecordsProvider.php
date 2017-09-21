@@ -164,7 +164,7 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
             return false;
         }
         $category_parent_id = $category[0]->category_parent;
-        if (! isset($category_evenements->cat_ID) || $category_evenements->cat_ID !== $category_parent_id) {
+        if (!isset($category_evenements->cat_ID) || $category_evenements->cat_ID !== $category_parent_id) {
             return false;
         }
 

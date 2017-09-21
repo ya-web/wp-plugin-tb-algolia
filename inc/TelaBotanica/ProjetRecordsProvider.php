@@ -36,7 +36,7 @@ class ProjetRecordsProvider extends BuddypressGroupRecordsProvider
             'object_dir' => 'groups',
             'item_id'    => $group->id
         ]);
-        $categories = array_map(function($category){
+        $categories = array_map(function ($category) {
             return bp_groups_get_group_type_object($category)->labels['name'];
         }, bp_groups_get_group_type($group->id, false) ?: []);
         $record['categories'] = ($categories === false ? [] : $categories);
