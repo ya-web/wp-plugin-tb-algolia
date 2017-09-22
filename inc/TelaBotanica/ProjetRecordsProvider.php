@@ -24,7 +24,7 @@ class ProjetRecordsProvider extends BuddypressGroupRecordsProvider
         $record['objectID'] = $group->id;
         $record['name'] = $group->name;
         $record['creator_id'] = $group->creator_id;
-        $record['description'] = $group->description;
+        $record['description'] = strip_tags(bp_get_group_description_excerpt($group));
         $record['last_activity'] = strtotime($group->last_activity); // @WARNING fuseau horaire de PHP
         $record['permalink'] = bp_get_group_permalink($group);
         $record['image'] = bp_core_fetch_avatar([
