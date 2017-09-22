@@ -36,7 +36,9 @@ class ProjetRecordsProvider extends BuddypressGroupRecordsProvider
             'object_dir' => 'groups',
             'item_id'    => $group->id
         ]);
-        $categories = bp_groups_get_group_type($group->id, false);
+        $categories = array_map(function ($category) {
+            return bp_groups_get_group_type_object($category)->labels['name'];
+        }, bp_groups_get_group_type($group->id, false) ?: []);
         $record['categories'] = ($categories === false ? [] : $categories);
         $record['tela'] = bp_groups_has_group_type($group->id, 'tela-botanica');
         $record['archive'] = bp_groups_has_group_type($group->id, 'archive');
