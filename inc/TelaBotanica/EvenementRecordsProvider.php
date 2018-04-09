@@ -91,12 +91,12 @@ class EvenementRecordsProvider extends WpQueryRecordsProvider
         ];
 
         // Formatted place
-        if ($record['event_place'] && function_exists('telabotanica_format_place')) {
+        if ($record['event_place'] && is_object($record['event_place']) && function_exists('telabotanica_format_place')) {
             $record['event_place']->formatted = telabotanica_format_place($record['event_place']);
         }
 
         // Geoloc
-        if ($record['event_place'] && $record['event_place']->latlng) {
+        if ($record['event_place'] && is_object($record['event_place']) && $record['event_place']->latlng) {
             $record['_geoloc'] = $record['event_place']->latlng;
             unset($record['event_place']->latlng);
         }
