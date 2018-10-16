@@ -25,7 +25,12 @@ class ProjetChangeListener
     {
         $this->index = $index;
         add_action('groups_group_after_save', [$this, 'pushRecords']);
+        add_action('groups_avatar_uploaded', [$this, 'updateGroupAvatar']);
         add_action('bp_groups_delete_group', [$this, 'deleteRecords']);
+    }
+
+    public function updateGroupAvatar($groupId) {
+        $this->pushRecords(groups_get_group($groupId));
     }
 
     /**
