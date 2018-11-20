@@ -42,6 +42,11 @@ add_action(
         require_once 'inc/TelaBotanica/EvenementsIndexSettingsFactory.php';
         require_once 'inc/TelaBotanica/EvenementChangeListener.php';
 
+        // pages
+        require_once 'inc/TelaBotanica/PageRecordsProvider.php';
+        require_once 'inc/TelaBotanica/PagesIndexSettingsFactory.php';
+        require_once 'inc/TelaBotanica/PageChangeListener.php';
+
         // projets
         require_once 'inc/TelaBotanica/ProjetRecordsProvider.php';
         require_once 'inc/TelaBotanica/ProjetsIndexSettingsFactory.php';
@@ -70,6 +75,13 @@ add_action(
         $index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'evenements', $algoliaClient, $settings->create(), $recordsProvider);
         new \WpAlgolia\TelaBotanica\EvenementChangeListener($index);
         $indexRepository->add('evenements', $index);
+
+        // Register "pages" index.
+        $settings = new \WpAlgolia\TelaBotanica\PagesIndexSettingsFactory();
+        $recordsProvider = new \WpAlgolia\TelaBotanica\PageRecordsProvider();
+        $index = new \WpAlgolia\PostsIndex(ALGOLIA_PREFIX . 'pages', $algoliaClient, $settings->create(), $recordsProvider);
+        new \WpAlgolia\TelaBotanica\PageChangeListener($index);
+        $indexRepository->add('pages', $index);
 
         // Register "projets" index
         $settings = new \WpAlgolia\TelaBotanica\ProjetsIndexSettingsFactory();
